@@ -1,22 +1,19 @@
 #ifndef PID_H
 #define PID_H
 
+#include "Eigen/Dense"
+
 class PID {
 public:
   /*
   * Errors
   */
-  double p_error;
-  double i_error;
-  double d_error;
+  std::vector<double> error = std::vector<double>(3, 0.0);
 
   /*
   * Coefficients
-  */ 
-  double Kp;
-  double Ki;
-  double Kd;
-
+  */
+  std::vector<double> K = std::vector<double>(3, 0.0);
   /*
   * Constructor
   */
@@ -35,12 +32,16 @@ public:
   /*
   * Update the PID error variables given cross track error.
   */
-  void UpdateError(double cte);
+  void UpdateError(double cte, double dt);
 
   /*
   * Calculate the total PID error.
   */
-  double TotalError();
+  //double TotalError();
+
+  double Action();
+
+  void Twiddle(double);
 };
 
 #endif /* PID_H */
