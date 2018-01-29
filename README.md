@@ -68,3 +68,7 @@ Integral gain helps to prevent bias problem by integrating error over time. Howe
 The tuning procedure was mainly manual. I set up P gain first, observed oscillations and then added D, that improved a situation, but oscillations became high frequent. The introduction of I gain helped to remove oscillations almost completely. The final choice is: `Kp = 0.05, Ki = 0.02; Kd = 0.1`. 
 
 ### Results
+
+The following image shows `cte` error after one encirclement of the track. Note, that at values 3-4 the car is still on the track, however it touches the red line near the ledge.
+
+![alt text][image1]
