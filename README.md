@@ -4,7 +4,7 @@
 
 ### Introduction
 
-Udacity [car simulator](https://github.com/udacity/self-driving-car-sim/releases)
+In this project I have implemented a PID controller in C++ to maneuver the vehicle around the track using Udacity [car simulator](https://github.com/udacity/self-driving-car-sim/releases).
 
 ### Building instructions
 
