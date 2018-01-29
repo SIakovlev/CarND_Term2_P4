@@ -30,6 +30,23 @@ if (std::fabs(action) > 1) {
   error[1] -= K[1]*cte*dt;
 }
 ```
+`dt` is elapsed time that is measured using c++ `chrono` library. The code snipped that does measurements is shown below:
+
+```cpp
+static double counter = 0;
+
+finish = std::chrono::high_resolution_clock::now();
+if (counter) {
+  std::chrono::duration<double> dt = finish - start;
+  pid.UpdateError(cte, dt.count());
+}
+...
+...
+...
+start = std::chrono::high_resolution_clock::now();
+ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
+```
+
 The other method simply calculated the resulting action based on three coefficients: `Kp, Ki, Kd`.
 
 ### PID parameters
