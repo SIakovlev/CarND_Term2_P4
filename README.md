@@ -11,7 +11,7 @@ In this project I have implemented a PID controller in C++ to maneuver the vehic
 * Clone this repository
 * Make a build directory: `mkdir build && cd build`
 * Compile the project with `cmake .. && make`
-* Run it: `./mpc`
+* Run it: `./pid`
 
 ### Implementation
 
@@ -61,11 +61,11 @@ To deal with highly inertial system we use derivative gain, that is leading in p
 
 #### I - integral gain
 
-Integral gain helps to prevent bias problem by integrating error over time. However, by doing so, it introduces more "inertia" in the system. Therefore for the car the integral term should be small enough.
+Integral gain helps to prevent bias problem by integrating the error over time. However, by doing so, it introduces more "inertia" in the system. Since the car has a very high inertia already, the integral term should be small enough.
 
 #### Tuning
 
-The tuning procedure was mainly manual. I set up P gain first, observed oscillations and then added D, that improved a situation, but oscillations became high frequent. The introduction of I gain helped to remove oscillations almost completely. The final choice is: `Kp = 0.05, Ki = 0.02; Kd = 0.1`. 
+The tuning procedure was done manually. I set up P gain first, observed oscillations and then added D, that improved a situation, but oscillations became high frequent with less amplitude. The addition of I gain helped to remove oscillations almost completely. The final choice is: `Kp = 0.05, Ki = 0.02; Kd = 0.1`. 
 
 ### Results
 
