@@ -32,8 +32,22 @@ if (std::fabs(action) > 1) {
 ```
 The other method simply calculated the resulting action based on three coefficients: `Kp, Ki, Kd`.
 
-### Parameters tuning
+### PID parameters
 
+#### P - proportional gain
 
+Proportional gain is the part of controller output that is proportional to the error between current measurement and reference signal (in our case the error is `cte`). The proportional gain is not capable of controlling the car because of its inertia and external disturbances. Inertia makes it oscillating around reference point. 
+
+#### D - derivative gain
+
+To deal with highly inertial system we use derivative gain, that is leading in phase with respect to proportional gain (by 90 degrees). This helps to correct it when a system starts oscilating because of inertia. But there is another problem - bias, that proportional and derivative gains do not address. The contribution of P gets smaller as we reach reference, whereas D is about zero when the error remains constant.
+
+#### I - integral gain
+
+Integral gain helps to prevent bias problem by integrating error over time. However, by doing so, it introduces more "inertia" in the system. Therefore for the car the integral term should be small enough.
+
+#### Tuning
+
+The tuning procedure was mainly manual. I set up P gain first, observed oscillations and then added D, that improved a situation, but oscillations became high frequent. The introduction of I gain helped to remove oscillations almost completely. The final choice is: `Kp = 0.05, Ki = 0.02; Kd = 0.1`. 
 
 ### Results
