@@ -45,13 +45,14 @@ int main()
 
   std::vector<double> data_steering_clipped;
   std::vector<double> data_steering;
+  std::vector<double> data_cte;
   std::vector<std::vector<double>> errors(3);
   std::vector<double> counts;
   bool stop_flag = false;
 
   pid.Init(0.05, 0.02, 0.1);
 
-  h.onMessage([&pid, &data_steering, &data_steering_clipped, &counts, &stop_flag, &errors](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
+  h.onMessage([&pid, &data_steering, &data_steering_clipped, &counts, &stop_flag, &errors, &data_cte](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
@@ -106,21 +107,28 @@ int main()
           
           // Gather visualisation data
           
-          data_steering.push_back(action);
-          data_steering_clipped.push_back(steer_value);
+          
           counts.push_back(counter);
           ++counter;
           errors[0].push_back(pid.error[0]);
           errors[1].push_back(pid.error[1]/pid.K[1]);
           errors[2].push_back(pid.error[2]);
+          data_steering.push_back(action);
+          data_steering_clipped.push_back(steer_value);
+          data_cte.push_back(cte);
 
           // DEBUG
-          // std::cout << "CTE: " << cte << " Steering Value: " << steer_value << std::endl;
+          std::cout << "CTE: " << cte << " Steering Value: " << steer_value << std::endl;
         }
       } else {
         // Manual driving
         std::string msg = "42[\"manual\",{}]";
         ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
+
+        plt::subplot(1, 1, 1);
+        plt::named_plot("Cross track error", counts, data_cte, "r");
+        plt::grid(true);
+        plt::show();
 
         /*
         plt::subplot(1, 1, 1);

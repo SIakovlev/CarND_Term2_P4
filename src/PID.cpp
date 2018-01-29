@@ -29,17 +29,13 @@ void PID::UpdateError(double cte, double dt) {
 
   error[2] = (cte - error[0])/dt; // derivative error
   error[0] = cte;                 // proportional error
-  error[1] += K[1]*cte*dt;    // integral error
+  error[1] += K[1]*cte*dt;        // integral error. Ki is included for 'bumpless' tuning.
   
-  
+  // Clamping
   double action = -(K[0] * error[0] + error[1] + K[2]*error[2]);
   if (std::fabs(action) > 1) {
     error[1] -= K[1]*cte*dt;
   }
-
-  std::cout << "P error contribution: " << error[0] << " ";
-  std::cout << "I error contribution: " << error[1] << " ";
-  std::cout << "D error contribution: " << error[2] << std::endl;
 }
 
 double PID::Action() {
