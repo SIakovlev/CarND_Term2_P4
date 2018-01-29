@@ -14,6 +14,7 @@ public:
   * Coefficients
   */
   std::vector<double> K = std::vector<double>(3, 0.0);
+
   /*
   * Constructor
   */

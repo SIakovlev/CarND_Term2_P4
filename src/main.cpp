@@ -3,7 +3,9 @@
 #include "json.hpp"
 #include "PID.h"
 #include <math.h>
+#include "matplotlibcpp.h"
 
+namespace plt = matplotlibcpp;
 // for convenience
 using json = nlohmann::json;
 
@@ -39,11 +41,17 @@ int main()
   // TODO: done
   // Initialize the pid variable.
 
-  const double dt = 0.01;
+  std::vector<double> ct_error;
 
-  pid.Init(0.1, 0.001/dt, 1.0*dt);
+  std::vector<double> data_steering_clipped;
+  std::vector<double> data_steering;
+  std::vector<std::vector<double>> errors(3);
+  std::vector<double> counts;
+  bool stop_flag = false;
 
-  h.onMessage([&pid, &dt](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
+  pid.Init(0.05, 0.02, 0.1);
+
+  h.onMessage([&pid, &data_steering, &data_steering_clipped, &counts, &stop_flag, &errors](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
@@ -62,6 +70,9 @@ int main()
           const double steer_value_max = 1;
           const double steer_value_min = -1;
 
+          static auto finish = std::chrono::high_resolution_clock::now();
+          static auto start = finish;
+
           /*
           * TODO: done
           * Calcuate steering value here, remember the steering value is
@@ -69,30 +80,69 @@ int main()
           * NOTE: Feel free to play around with the throttle and speed. Maybe use
           * another PID controller to control the speed!
           */
-          static int i = 0;
-          pid.UpdateError(cte, dt);
-          if (i%20) {
-            pid.Twiddle(cte*cte);
+
+          static double counter = 0;
+
+          finish = std::chrono::high_resolution_clock::now();
+          if (counter) {
+            std::chrono::duration<double> dt = finish - start;
+            pid.UpdateError(cte, dt.count());
           }
-          ++i;
+          
+          //pid.Twiddle(cte*cte);
           std::cout << "Coeffs: Kp = " << pid.K[0] << ", Ki = " << pid.K[1] << ", Kd = " << pid.K[2] << std::endl;
 
-          steer_value = clip(pid.Action(), steer_value_min, steer_value_max);
-          
-          // DEBUG
-          std::cout << "CTE: " << cte << " Steering Value: " << steer_value << std::endl;
+          double action = pid.Action();
+          steer_value = clip(action, steer_value_min, steer_value_max);
 
           json msgJson;
           msgJson["steering_angle"] = steer_value;
-          msgJson["throttle"] = 0.5;
+          msgJson["throttle"] = 0.3;
           auto msg = "42[\"steer\"," + msgJson.dump() + "]";
-          //std::cout << msg << std::endl;
+          // std::cout << msg << std::endl;
+          // start timer
+          start = std::chrono::high_resolution_clock::now();
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
+          
+          // Gather visualisation data
+          
+          data_steering.push_back(action);
+          data_steering_clipped.push_back(steer_value);
+          counts.push_back(counter);
+          ++counter;
+          errors[0].push_back(pid.error[0]);
+          errors[1].push_back(pid.error[1]/pid.K[1]);
+          errors[2].push_back(pid.error[2]);
+
+          // DEBUG
+          // std::cout << "CTE: " << cte << " Steering Value: " << steer_value << std::endl;
         }
       } else {
         // Manual driving
         std::string msg = "42[\"manual\",{}]";
         ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
+
+        /*
+        plt::subplot(1, 1, 1);
+        plt::named_plot("PID output (steering angle)", counts, data_steering, "--r");
+        plt::named_plot("Clipped steering angle", counts, data_steering_clipped, "k");
+        plt::legend();
+        plt::grid(true);
+        plt::show();
+        
+        plt::subplot(2, 1, 1);
+        plt::named_plot("Kp error", counts, errors[0], "r");
+        plt::named_plot("Ki error", counts, errors[1], "k");
+        plt::named_plot("Kd error", counts, errors[2], "b");
+        plt::legend();
+        plt::grid(true);
+        plt::subplot(2, 1, 2);
+        plt::named_plot("Clipped steering angle", counts, data_steering_clipped, "--k");
+        plt::legend();
+        plt::grid(true);
+        plt::show();
+
+        stop_flag = true;*/
       }
     }
   });
@@ -132,4 +182,5 @@ int main()
     return -1;
   }
   h.run();
+  if (stop_flag) return 0;
 }

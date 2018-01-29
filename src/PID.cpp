@@ -26,18 +26,33 @@ void PID::Init(double Kp, double Ki, double Kd) {
 }
 
 void PID::UpdateError(double cte, double dt) {
+
   error[2] = (cte - error[0])/dt; // derivative error
   error[0] = cte;                 // proportional error
-  error[1] += cte * dt;           // integral error
+  error[1] += K[1]*cte*dt;    // integral error
+  
+  
+  double action = -(K[0] * error[0] + error[1] + K[2]*error[2]);
+  if (std::fabs(action) > 1) {
+    error[1] -= K[1]*cte*dt;
+  }
+
+  std::cout << "P error contribution: " << error[0] << " ";
+  std::cout << "I error contribution: " << error[1] << " ";
+  std::cout << "D error contribution: " << error[2] << std::endl;
 }
 
 double PID::Action() {
-  return -(std::inner_product(K.begin(), K.end(), error.begin(), 0.0));
+  double action = -(K[0] * error[0] + error[1] + K[2]*error[2]);
+  return action;
 }
 
+// For future experiments. It works, but completely useless here
 void PID::Twiddle(double err) {
 
-  static std::vector<double> delta = {0.1, 0.1, 0.1};
+  std::cout << "Accumulative error: " << err << std::endl;
+
+  static std::vector<double> delta = {0.01, 0.0001, 0.01};
   static unsigned long i = 0;
   static double best_err = err;
   static States s = start_alg;

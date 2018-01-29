@@ -1,4 +1,4 @@
-#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
 
 #IncludeRegexScan: ^.*$
 
@@ -1098,5 +1098,23 @@ json.hpp
 PID.h
 /home/sergey/Programming/CarND_Term2/CarND_Term2_P4/src/PID.h
 math.h
+-
+matplotlibcpp.h
+/home/sergey/Programming/CarND_Term2/CarND_Term2_P4/src/matplotlibcpp.h
+
+/home/sergey/Programming/CarND_Term2/CarND_Term2_P4/src/matplotlibcpp.h
+vector
+-
+map
+-
+numeric
+-
+stdexcept
+-
+iostream
+-
+functional
+-
+python2.7/Python.h
 -
 
