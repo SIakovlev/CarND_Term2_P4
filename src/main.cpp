@@ -90,7 +90,6 @@ int main()
             pid.UpdateError(cte, dt.count());
           }
           
-          //pid.Twiddle(cte*cte);
           std::cout << "Coeffs: Kp = " << pid.K[0] << ", Ki = " << pid.K[1] << ", Kd = " << pid.K[2] << std::endl;
 
           double action = pid.Action();
@@ -124,13 +123,13 @@ int main()
         // Manual driving
         std::string msg = "42[\"manual\",{}]";
         ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
-
+        /*
         plt::subplot(1, 1, 1);
         plt::named_plot("Cross track error", counts, data_cte, "r");
         plt::grid(true);
         plt::show();
 
-        /*
+        
         plt::subplot(1, 1, 1);
         plt::named_plot("PID output (steering angle)", counts, data_steering, "--r");
         plt::named_plot("Clipped steering angle", counts, data_steering_clipped, "k");
