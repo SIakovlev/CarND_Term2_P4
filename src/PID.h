@@ -2,18 +2,19 @@
 #define PID_H
 
 #include "Eigen/Dense"
+#include <vector>
 
 class PID {
 public:
   /*
   * Errors
   */
-  std::vector<double> error = std::vector<double>(3, 0.0);
+  std::vector<double> error = {0.0, 0.0, 0.0};
 
   /*
   * Coefficients
   */
-  std::vector<double> K = std::vector<double>(3, 0.0);
+  std::vector<double> K = {0.0, 0.0, 0.0};
 
   /*
   * Constructor
